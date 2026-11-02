@@ -1,0 +1,128 @@
+<aside class="panel">
+  <header class="panel-header">
+    <h1>Planer tras rowerowych</h1>
+    <p class="muted">
+      Kliknij na mapie, aby dodać start, punkty pośrednie i cel.
+    </p>
+  </header>
+
+  <section>
+    <h2>Typ roweru</h2>
+    <mat-button-toggle-group
+      class="full-width"
+      hideSingleSelectionIndicator
+      [value]="facade.baseProfile()"
+      (change)="facade.setProfile($event.value)"
+    >
+      <mat-button-toggle value="ROAD">Szosowy</mat-button-toggle>
+      <mat-button-toggle value="GRAVEL">Gravel</mat-button-toggle>
+      <mat-button-toggle value="MTB">Górski</mat-button-toggle>
+    </mat-button-toggle-group>
+  </section>
+
+  <section>
+    <h2>Preferencje</h2>
+    <mat-form-field class="surface-field" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Nawierzchnia</mat-label>
+      <mat-select [value]="facade.surface()" (selectionChange)="facade.setSurface($event.value)">
+        <mat-option value="NO_PREFERENCE">Bez preferencji </mat-option>
+        <mat-option value="PREFER_PAVED">Utwardzona</mat-option>
+        <mat-option value="PREFER_UNPAVED">Nieutwardzona</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-checkbox
+      [checked]="facade.avoidMainRoads()"
+      (change)="facade.setAvoidMainRoads($event.checked)"
+    >
+      Unikaj dróg głównych
+    </mat-checkbox>
+    <mat-checkbox
+      [checked]="facade.avoidSteepClimbs()"
+      (change)="facade.setAvoidSteepClimbs($event.checked)"
+    >
+      Unikaj stromych podjazdów
+    </mat-checkbox>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>Punkty trasy</h2>
+      <span class="muted">{{ facade.points().length }} / {{ facade.maxPoints }}</span>
+    </div>
+
+    @if (facade.points().length === 0) {
+      <p class="muted">Brak punktów.</p>
+    } @else {
+      <ol class="points">
+        @for (point of facade.points(); track $index) {
+          <li>
+            <span class="point-name">{{ facade.pointLabel($index) }}</span>
+            <span class="coords">{{ point.lat.toFixed(5) }}, {{ point.lon.toFixed(5) }}</span>
+            <button
+              type="button"
+              class="remove"
+              title="Usuń punkt"
+              (click)="facade.removePoint($index)"
+            >
+              &times;
+            </button>
+          </li>
+        }
+      </ol>
+      <div class="actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="facade.points().length < 2"
+          (click)="facade.reverse()"
+        >
+          Odwróć
+        </button>
+        <button mat-stroked-button type="button" (click)="facade.clear()">Wyczyść</button>
+      </div>
+    }
+  </section>
+
+  @if (facade.loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (facade.error(); as message) {
+    <p class="error">{{ message }}</p>
+  }
+
+  @if (facade.route(); as r) {
+    <section class="summary">
+      <h2>Trasa</h2>
+      <dl class="stats">
+        <div>
+          <dt>Dystans</dt>
+          <dd>{{ r.distanceMeters / 1000 | number: '1.1-1' }} km</dd>
+        </div>
+        <div>
+          <dt>Czas</dt>
+          <dd>{{ facade.formatDuration(r.durationSeconds) }}</dd>
+        </div>
+        <div>
+          <dt>Podjazdy</dt>
+          <dd>{{ r.ascentMeters | number: '1.0-0' }} m</dd>
+        </div>
+        <div>
+          <dt>Zjazdy</dt>
+          <dd>{{ r.descentMeters | number: '1.0-0' }} m</dd>
+        </div>
+      </dl>
+
+      <h3>Nawierzchnia</h3>
+      <ul class="surfaces">
+        @for (s of r.surfaceShares; track s.surface) {
+          <li>
+            <span>{{ facade.surfaceLabel(s.surface) }}</span>
+            <span class="bar"><span [style.width.%]="s.share * 100"></span></span>
+            <span class="share">{{ s.share | percent: '1.0-0' }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</aside>

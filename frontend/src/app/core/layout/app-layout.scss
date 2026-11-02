@@ -1,0 +1,21 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.toolbar {
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--mat-sys-outline-variant);
+}
+
+.brand {
+  font: var(--mat-sys-headline-small);
+  font-weight: 500;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

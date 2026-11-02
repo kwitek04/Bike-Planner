@@ -1,0 +1,6 @@
+target/
+data/
+!.gitkeep
+.idea/
+src/test/resources/osm/
+

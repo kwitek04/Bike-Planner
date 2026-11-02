@@ -1,0 +1,6 @@
+<div class="planner">
+  <app-planner-panel />
+  <main class="map">
+    <app-map-shell (mapClicked)="onMapClicked($event)" (pointMoved)="onPointMoved($event)" />
+  </main>
+</div>

@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: bikeplanner
+  mvc:
+    problemdetails:
+      enabled: true
+
+routing:
+  graphhopper:
+    osm-file: data/dolnoslaskie-latest.osm.pbf
+    graph-location: data/graph-cache
+    elevation:
+      enabled: true
+      cache-dir: data/srtm
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

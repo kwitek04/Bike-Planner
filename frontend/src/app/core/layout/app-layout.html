@@ -1,6 +1,19 @@
 <div class="shell">
   <mat-toolbar class="toolbar">
-    <span class="brand">Planer tras</span>
+    <a class="brand" routerLink="/">Planer tras</a>
+    <span class="spacer"></span>
+    @if (auth.account(); as account) {
+      <span class="account">
+        {{ account.email }}
+        @if (auth.isModerator()) {
+          <span class="role">moderator</span>
+        }
+      </span>
+      <button mat-button type="button" (click)="auth.logout()">Wyloguj</button>
+    } @else {
+      <a mat-button routerLink="/logowanie">Zaloguj się</a>
+      <a mat-stroked-button routerLink="/rejestracja">Załóż konto</a>
+    }
   </mat-toolbar>
   <div class="content">
     <router-outlet />

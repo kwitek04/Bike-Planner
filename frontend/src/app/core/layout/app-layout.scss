@@ -6,12 +6,31 @@
 
 .toolbar {
   flex-shrink: 0;
+  gap: 8px;
   border-bottom: 2px solid var(--mat-sys-outline-variant);
 }
 
 .brand {
   font: var(--mat-sys-headline-small);
   font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.account {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.role {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  font: var(--mat-sys-label-small);
 }
 
 .content {

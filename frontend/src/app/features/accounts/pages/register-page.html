@@ -1,0 +1,46 @@
+<div class="auth-page">
+  <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+    <h1>Załóż konto</h1>
+
+    <mat-form-field appearance="outline">
+      <mat-label>E-mail</mat-label>
+      <input matInput type="email" formControlName="email" autocomplete="email" />
+      @if (form.controls.email.hasError('required')) {
+        <mat-error>Podaj adres e-mail.</mat-error>
+      } @else {
+        <mat-error>Podaj poprawny adres e-mail.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hasło</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      <mat-hint>Co najmniej {{ minPasswordLength }} znaków.</mat-hint>
+      @if (form.controls.password.hasError('maxlength')) {
+        <mat-error>Hasło jest za długie.</mat-error>
+      } @else {
+        <mat-error>Hasło musi mieć co najmniej {{ minPasswordLength }} znaków.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Powtórz hasło</mat-label>
+      <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
+      <mat-error>Powtórz hasło.</mat-error>
+    </mat-form-field>
+
+    @if (form.hasError('passwordsMismatch') && form.controls.confirmPassword.dirty) {
+      <p class="error">Hasła nie są identyczne.</p>
+    }
+    @if (auth.error(); as message) {
+      <p class="error">{{ message }}</p>
+    }
+
+    <button mat-flat-button type="submit" [disabled]="auth.pending()">Załóż konto</button>
+    @if (auth.pending()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <p class="muted">Masz już konto? <a routerLink="/logowanie">Zaloguj się</a></p>
+  </form>
+</div>

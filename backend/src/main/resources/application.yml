@@ -4,6 +4,19 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/bikeplanner
+    username: ${DB_USER:bikeplanner}
+    password: ${DB_PASSWORD:bikeplanner}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+accounts:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-before-deploy}
+    ttl: 8h
 
 routing:
   graphhopper:

@@ -1,0 +1,32 @@
+@if (facade.hasRoute()) {
+  <section class="save">
+    <h2>Ulubione</h2>
+    @if (!facade.isLoggedIn()) {
+      <p class="muted">
+        <a routerLink="/logowanie">Zaloguj się</a>, aby zapisać trasę w ulubionych.
+      </p>
+    } @else if (facade.savedAs(); as savedName) {
+      <p class="muted">
+        Zapisano jako „{{ savedName }}”. <a routerLink="/ulubione">Ulubione trasy</a>
+      </p>
+    } @else {
+      <form class="save-form" [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Nazwa trasy</mat-label>
+          <input matInput formControlName="name" [maxlength]="maxNameLength" />
+          @if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Nazwa może mieć najwyżej {{ maxNameLength }} znaków.</mat-error>
+          } @else {
+            <mat-error>Podaj nazwę trasy.</mat-error>
+          }
+        </mat-form-field>
+        <button mat-flat-button type="submit" [disabled]="facade.saving()">
+          Zapisz w ulubionych
+        </button>
+      </form>
+      @if (facade.saveError(); as message) {
+        <p class="error">{{ message }}</p>
+      }
+    }
+  </section>
+}

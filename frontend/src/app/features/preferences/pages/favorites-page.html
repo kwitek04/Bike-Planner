@@ -1,0 +1,26 @@
+<div class="favorites-page">
+  <section class="card">
+    <h1>Ulubione trasy</h1>
+
+    @if (facade.loading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (facade.error(); as message) {
+      <p class="error">{{ message }}</p>
+    }
+
+    @if (!facade.loading() && facade.favorites().length === 0 && !facade.error()) {
+      <p class="muted">
+        Nie masz jeszcze ulubionych tras. Wyznacz trasę w <a routerLink="/">planerze</a> i zapisz
+        ją.
+      </p>
+    } @else {
+      <app-favorite-list
+        [favorites]="facade.favorites()"
+        (opened)="onOpened($event)"
+        (removed)="onRemoved($event)"
+      />
+    }
+  </section>
+</div>

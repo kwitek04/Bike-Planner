@@ -3,6 +3,7 @@
     <a class="brand" routerLink="/">Planer tras</a>
     <span class="spacer"></span>
     @if (auth.account(); as account) {
+      <a mat-button routerLink="/ulubione">Ulubione</a>
       <span class="account">
         {{ account.email }}
         @if (auth.isModerator()) {

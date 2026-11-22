@@ -6,6 +6,7 @@ import { LatLon } from '../../shared/models/geo';
 import {
   BaseProfile,
   RouteApi,
+  RouteRequest,
   RouteResponse,
   SurfacePreference,
 } from './data/route-api';
@@ -48,6 +49,19 @@ export class RoutingFacade {
   readonly error = signal<string | null>(null);
 
   readonly geometry = computed(() => this.route()?.geometry.coordinates ?? null);
+  readonly request = computed<RouteRequest | null>(() =>
+    this.points().length < 2
+      ? null
+      : {
+          points: this.points(),
+          baseProfile: this.baseProfile(),
+          preferences: {
+            surface: this.surface(),
+            avoidMainRoads: this.avoidMainRoads(),
+            avoidSteepClimbs: this.avoidSteepClimbs(),
+          },
+        },
+  );
   readonly maxPoints = MAX_POINTS;
 
   addPoint(point: LatLon): void {
@@ -73,6 +87,16 @@ export class RoutingFacade {
 
   reverse(): void {
     this.points.update((points) => [...points].reverse());
+    this.syncMapPoints();
+    this.plan();
+  }
+
+  load(request: RouteRequest): void {
+    this.points.set(request.points.slice(0, MAX_POINTS).map(({ lat, lon }) => ({ lat, lon })));
+    this.baseProfile.set(request.baseProfile);
+    this.surface.set(request.preferences.surface);
+    this.avoidMainRoads.set(request.preferences.avoidMainRoads);
+    this.avoidSteepClimbs.set(request.preferences.avoidSteepClimbs);
     this.syncMapPoints();
     this.plan();
   }
@@ -127,7 +151,8 @@ export class RoutingFacade {
   private plan(): void {
     this.pending?.unsubscribe();
     this.error.set(null);
-    if (this.points().length < 2) {
+    const request = this.request();
+    if (!request) {
       this.route.set(null);
       this.mapStore.setRouteGeometry(null);
       this.loading.set(false);
@@ -135,29 +160,19 @@ export class RoutingFacade {
     }
 
     this.loading.set(true);
-    this.pending = this.api
-      .planRoute({
-        points: this.points(),
-        baseProfile: this.baseProfile(),
-        preferences: {
-          surface: this.surface(),
-          avoidMainRoads: this.avoidMainRoads(),
-          avoidSteepClimbs: this.avoidSteepClimbs(),
-        },
-      })
-      .subscribe({
-        next: (route) => {
-          this.route.set(route);
-          this.mapStore.setRouteGeometry(route.geometry.coordinates);
-          this.loading.set(false);
-        },
-        error: (e: HttpErrorResponse) => {
-          this.route.set(null);
-          this.mapStore.setRouteGeometry(null);
-          this.loading.set(false);
-          this.error.set(this.describeError(e));
-        },
-      });
+    this.pending = this.api.planRoute(request).subscribe({
+      next: (route) => {
+        this.route.set(route);
+        this.mapStore.setRouteGeometry(route.geometry.coordinates);
+        this.loading.set(false);
+      },
+      error: (e: HttpErrorResponse) => {
+        this.route.set(null);
+        this.mapStore.setRouteGeometry(null);
+        this.loading.set(false);
+        this.error.set(this.describeError(e));
+      },
+    });
   }
 
   private syncMapPoints(): void {

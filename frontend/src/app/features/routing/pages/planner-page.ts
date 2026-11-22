@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { MapShell } from '../../../shared/map/map-shell';
+import { SaveFavoriteForm } from '../../preferences/components/save-favorite-form';
 import { PlannerPanel } from '../components/planner-panel';
 import { RoutingFacade } from '../routing.facade';
 
 @Component({
   selector: 'app-planner-page',
-  imports: [PlannerPanel, MapShell],
+  imports: [PlannerPanel, MapShell, SaveFavoriteForm],
   templateUrl: './planner-page.html',
   styleUrl: './planner-page.scss',
 })
